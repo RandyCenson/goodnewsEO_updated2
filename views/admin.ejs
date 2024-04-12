@@ -16,7 +16,7 @@
         <div class="queue">
             <h3>insert </h3>
             <form action="/add_queue" method="post">
-                <input type="text" placeholder="date" name="date">
+                <input type="text" placeholder="mm/dd/yyyy" name="date">
                 
                 <input type="text" placeholder="orderedby" name="orderedby">
                 
@@ -60,7 +60,7 @@
                                             <button type="submit">delete</button>
                                         </td>
                                     </form>
-                                    <form action="/update_queue/<%= data._id %>" method="put">
+                                    <form action="/update_queue/<%= data._id %>" method="post">
                                         <td>|</td>
                                         <td><input type="text" placeholder="update date" name="date_update"></td>
                                         <td><input type="text" placeholder="update orderedby" name="orderedby_update"></td>

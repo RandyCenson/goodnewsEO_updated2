@@ -162,23 +162,13 @@ app.get('/delete_queue/:id', async (req, res) => {
     }
 })
 
-app.put('/update_queue/:id', async (req, res) => {
+app.post('/update_queue/:id', async (req, res) => {
     //gagal
     try {
         const { id } = req.params;
-        // await collection_dataqueue.replaceOne( { _id: id} , {
-        //     $set: {
-        //         tanggal: Date.now(),
-        //         orderedby: 'req.body.orderedby',
-        //         handler: 'req.body.handler'
-        //     }
-        // });
-        let datausers = await collection_dataqueue.find();
-
-        // console.log(datausers.find(data => data._id == id));
-        await datausers.updateOne({ _id: id }, {
+        await collection_dataqueue.findByIdAndUpdate({ _id: id }, {
             $set: {
-                date: req.body.date_update,
+                tanggal: req.body.date_update,
                 handler: req.body.handler_update,
                 orderedby: req.body.orderedby_update,
             }
