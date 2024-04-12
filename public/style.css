@@ -1,0 +1,234 @@
+body {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    /* background-color: red; */
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    /* align-items: center; */
+    padding: 0px 5%;
+    background-color: rgb(246, 231, 216);
+}
+
+.nav-bar {
+    list-style: none;
+}
+
+.nav-bar li {
+    /* buat jadi horizontal */
+    display: inline-block;
+    padding: 10px 10px;
+    font-size: 1.5em;
+
+}
+
+.nav-bar li a {
+    cursor: pointer;
+    text-decoration: none;
+    color: rgb(134, 57, 57);
+}
+
+.nav-bar li a:hover {
+    color: rgb(250, 177, 128);
+    text-decoration: underline;
+}
+
+/* home */
+/* .home{
+    display: flex;
+    margin: auto;
+    background-color: grey;
+    position: relative;
+    top: 10px;
+    height: 70vh;
+    width: 100vw;
+}
+.home-right img{
+    height: 100%;
+    width: 100%;
+    background-color: rgb(180, 136, 136);
+    object-fit: cover;
+    
+} */
+
+#carouselExample {
+    max-width: auto;
+    margin: auto;
+    
+}
+
+.carousel-item img {
+    width: 100%;
+    height: 75vh;
+    object-fit: cover;
+    opacity: 0.5;
+}
+
+.title{
+    display:flex;
+    flex-direction: column;
+    background-color: rgb(48, 48, 48);
+    font-size: 5em;
+    position: absolute;
+    top: 38%;
+    left: 10%;
+    z-index: 1;
+    font-weight: bold;
+    width: auto;
+    padding: 5px;
+    opacity: 0.8;
+}
+.title1{
+    background-color: rgb(246, 137, 137);
+    color: white;
+}
+.title2{
+    background-color: white;
+    color: black;
+    padding-left: 60px;
+    padding-right: 10px;
+}
+
+
+
+/* testimoni */
+.testimoni {
+    background-color: rgb(246, 231, 216);
+    display: flex;
+    height: 20vh;
+    width: 60vw;
+    margin: auto;
+
+}
+
+.testimoni img {
+    width: 100%;
+    height: auto;
+    object-fit: cover;
+    opacity: 0.5;
+}
+
+.button-container {
+    /* background-color: blueviolet; */
+    position: relative;
+
+}
+
+.testimoni-button {
+    position: absolute;
+    top: 55px;
+    right: 50px;
+    font-size: 30px;
+    padding: 5px 50px;
+    border: none;
+    font-size: 2em;
+
+}
+
+.space {
+    /* background-color: red; */
+    height: 4em;
+}
+
+.space2 {
+    /* background-color: red; */
+    height: 3em;
+}
+
+.about {
+    display: flex;
+    /* background-color: chartreuse; */
+    height: 20em;
+    width: 70%;
+    margin: auto;
+    position: relative;
+    
+}
+
+.about img{
+    object-fit: cover;
+    width: 100%;
+    height: auto;
+    opacity: 0.8;
+    object-position: 50% 65%;
+}
+.about-text{
+    position: absolute;
+    display: flex;
+    background-color: gray;
+    text-align: center;
+    margin-right: 50%;
+    margin-left: 2%;
+    color: white;
+    opacity: 0.8;
+    height: 100%;
+    align-items: center;
+    padding: 30px;
+    font-size: 2em;
+    font-weight: bold
+    
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(3, 0.2fr);
+    grid-gap: 20px ;
+    background-color: rgb(246, 231, 216);
+    height: auto;
+    width: 90%;
+    margin: auto;
+    justify-content: center;
+    position: relative;
+    padding: 10px;
+    
+}
+
+
+.contactus{
+    background-color: rgb(250, 121, 121);
+    margin: auto;
+    width: 60%;
+    padding: 1em;
+    border-radius: 10%;
+}
+
+footer{
+    background-color: rgb(198, 93, 123);
+    height: auto;
+    display: grid;
+    grid-template-columns: repeat(2, 5fr);
+    margin: auto;
+    padding: 10px 16em;
+}
+
+.queue{
+    display: flex;
+    margin: auto;
+    width: 60%;
+    height: 30em;
+    justify-content: center;
+}
+.calender{
+    background-color: green;
+    display: flex;
+    margin: auto;
+    width: 60%;
+    height: 30em;
+    justify-content: center;
+}
+
+.carousel-control-prev-icon{
+    background-color: red;
+    border-radius: 50%;
+    width: 100px;        
+    height: 100px;
+  }
+  .carousel-control-next-icon{
+    background-color: red;
+    border-radius: 50%;
+    width: 100px;        
+    height: 100px;
+  }

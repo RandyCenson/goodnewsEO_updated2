@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <div class="login">
+        <!-- buat statement untuk button logout muncul hanya saat sudah login, dan logout tetap di index -->
+        <form action="/login" method="post">
+            <li>login <input type="text" placeholder="email" name="email"> <input type="text" placeholder="password" name="password"> <button type="submit">login</button></li> 
+         </form>
+    </div>
+    <div class="container">
+        <% if (messages.error) { %>
+            <div class=".alert alert-danger" role="alert">
+                <%= messages.error %>
+            </div>
+        <% } %>
+        <% if (messages.success) { %>
+            <div class=".alert alert-success" role="alert">
+                <%= messages.success %>
+            </div>
+        <% } %>
+    </div>
+</body>
+</html>

@@ -1,0 +1,170 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style_admin.css">
+    <script src="../public/test.js"></script>
+</head>
+
+<body>
+    <div class="grid_layout">
+        
+            
+        <div class="queue">
+            <h3>insert </h3>
+            <form action="/add_queue" method="post">
+                <input type="text" placeholder="date" name="date">
+                
+                <input type="text" placeholder="orderedby" name="orderedby">
+                
+                <input type="text" placeholder="handler" name="handler">
+                
+                <button type="submit">submit</button>
+            </form>
+
+            <h3>data queue:</h3>
+            <div class="queue">
+                <div class="scroll_box">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">Queue</th>
+                                <th scope="col">Date</th>
+                                <th scope="col">ordered by</th>
+                                <th scope="col">Handler</th>
+                            </tr>
+                        </thead>
+                        
+                        <% data_queue.forEach((data, index)=> { %>
+
+                            <tbody>
+                                <tr>
+
+                                    <th scope="row">
+                                        <%= index +1%>
+                                    </th>
+                                    <td>
+                                        <%= data.tanggal %>
+                                    </td>
+                                    <td>
+                                        <%= data.orderedby %>
+                                    </td>
+                                    <td>
+                                        <%= data.handler %>
+                                    </td>
+                                    <form action="/delete_queue/<%= data._id %>" method="delete">
+                                        <td>
+                                            <button type="submit">delete</button>
+                                        </td>
+                                    </form>
+                                    <form action="/update_queue/<%= data._id %>" method="put">
+                                        <td>|</td>
+                                        <td><input type="text" placeholder="update date" name="date_update"></td>
+                                        <td><input type="text" placeholder="update orderedby" name="orderedby_update"></td>
+                                        <td><input type="text" placeholder="update handler" name="handler_update"></td>
+                                        <td>
+                                            <button type="submit">update</button>
+                                        </td>
+                                    </form>
+                                </tr>
+
+                            </tbody>
+
+                            <% }) %>
+                    </table>
+                </div>
+                </form>
+            </div>
+        </div>
+        <br><br><br>
+        <div class="users">
+            <h3>signed up users</h3>
+
+            <div class="queue">
+                <div class="scroll_box">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th scope="col">No</th>
+                                <th scope="col">Date sign up</th>
+                                <th scope="col">email</th>
+                                <th scope="col">username</th>
+                            </tr>
+                        </thead>
+                        <% data_user.forEach((data, index)=> { %>
+                            <tbody>
+                                <tr>
+                                    <th scope="row">
+                                        <%= index +1%>
+                                    </th>
+                                    <td>
+                                        <%= data.date %>
+                                    </td>
+                                    <td>
+                                        <%= data.email %>
+                                    </td>
+                                    <td>
+                                        <%= data.username %>
+                                    </td>
+
+                                </tr>
+
+                            </tbody>
+
+                            <% }) %>
+                    </table>
+                </div>
+            </div>
+            </form>
+        </div>
+
+    </div>
+    <div class="users_login">
+        <h3>users login tracking</h3>
+
+        <div class="queue">
+            <div class="scroll_box">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th scope="col">No</th>
+                            <th scope="col">Date login</th>
+                            <th scope="col">email</th>
+                            <th scope="col">username</th>
+                        </tr>
+                    </thead>
+                    <% data_user_login.forEach((data, index)=> { %>
+                        <tbody>
+                            <tr>
+                                <th scope="row">
+                                    <%= index +1%>
+                                </th>
+                                <td>
+                                    <%= data.date %>
+                                </td>
+                                <td>
+                                    <%= data.email %>
+                                </td>
+                                <td>
+                                    <%= data.username %>
+                                </td>
+
+                            </tr>
+
+                        </tbody>
+
+                        <% }) %>
+                </table>
+            </div>
+        </div>
+        </form>
+    </div>
+
+
+</body>
+
+
+</html>
