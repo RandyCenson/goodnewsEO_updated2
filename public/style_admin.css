@@ -1,0 +1,11 @@
+body{
+    background-color: bisque;
+    margin: 10% 10%;
+}
+.scroll_box{
+    overflow-y: auto;
+    height: 150px;
+    width:fit-content;
+    border-color: black;
+    border: 1px solid;
+}   
