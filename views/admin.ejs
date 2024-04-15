@@ -11,17 +11,17 @@
 
 <body>
     <div class="grid_layout">
-        
-            
+
+
         <div class="queue">
             <h3>insert </h3>
             <form action="/add_queue" method="post">
                 <input type="text" placeholder="mm/dd/yyyy" name="date">
-                
+
                 <input type="text" placeholder="orderedby" name="orderedby">
-                
+
                 <input type="text" placeholder="handler" name="handler">
-                
+
                 <button type="submit">submit</button>
             </form>
 
@@ -37,12 +37,10 @@
                                 <th scope="col">Handler</th>
                             </tr>
                         </thead>
-                        
-                        <% data_queue.forEach((data, index)=> { %>
 
+                        <% data_queue.forEach((data, index)=> { %>
                             <tbody>
                                 <tr>
-
                                     <th scope="row">
                                         <%= index +1%>
                                     </th>
@@ -63,7 +61,8 @@
                                     <form action="/update_queue/<%= data._id %>" method="post">
                                         <td>|</td>
                                         <td><input type="text" placeholder="update date" name="date_update"></td>
-                                        <td><input type="text" placeholder="update orderedby" name="orderedby_update"></td>
+                                        <td><input type="text" placeholder="update orderedby" name="orderedby_update">
+                                        </td>
                                         <td><input type="text" placeholder="update handler" name="handler_update"></td>
                                         <td>
                                             <button type="submit">update</button>
@@ -80,6 +79,68 @@
             </div>
         </div>
         <br><br><br>
+
+        <div class="file_upload">
+            <form action="/home_carousel_img" method="post" enctype="multipart/form-data">
+                home carousel slide img:
+                path: <input type="file" name="home_carousel_img" />
+                <button type="submit">upload</button>
+            </form>
+            <form action="/gallery_img" method="post" enctype="multipart/form-data">
+                home carousel slide img:
+                path: <input type="file" name="gallery_img" />
+                Description: <input type="text" name="description" />
+                <button type="submit">upload</button>
+            </form>
+            
+            <div class="scroll_box">
+                <h3>file uploaded: </h3>
+                <table class="table_upload">
+                    <tr>
+                        <th>field</th>
+                        <th>path</th>
+                        <th>action</th>
+                        <th>Description</th>
+                    </tr>
+                    <% data_file_upload.forEach((data, index)=> { %>
+                        <tr>
+                            <td>
+                                <%= data.field %>
+                            </td>
+                            <td>
+                                <%= data.img_path %>
+                            </td>
+                            <form action="/delete_home_carousel_img/<%= data._id %>" method="delete">
+                                <td>
+                                    <button type="submit">delete</button>
+                                </td>
+                            </form>
+                        </tr>
+                        <% }) %>
+                        <% data_file_upload_gallery.forEach((data, index)=> { %>
+                            <tr>
+                                <td>
+                                    <%= data.field %>
+                                </td>
+                                <td>
+                                    <%= data.img_path %>
+                                </td>
+                                <td>
+                                    <%= data.description %>
+                                </td>
+                                <form action="/delete_gallery_img/<%= data._id %>" method="delete">
+                                    <td>
+                                        <button type="submit">delete</button>
+                                    </td>
+                                </form>
+                            </tr>
+                            <% }) %>
+                </table>
+            </div>
+
+        </div>
+
+
         <div class="users">
             <h3>signed up users</h3>
 

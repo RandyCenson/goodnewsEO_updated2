@@ -19,36 +19,14 @@
 </header>
 <body class="body-kalender">
     <section class="product-grid">
-        <article class="product">
-          <img src="img_goodnewseo/template.jpg" alt="Product 1">
-          <p>Lorem ipsum dolor sit amet.</p>
-          <a href="#" class="about-btn">About</a>
+      <% data_gallery.forEach((data, index) => { %>
+       <article class="product">
+          <img src="<%= data.img_path %>" alt=index>
+          <p><%= data.description %></p>
         </article>
-        <article class="product">
-          <img src="img_goodnewseo/template.jpg" alt="Product 2">
-          <p>Lorem ipsum dolor sit amet.</p>
-          <a href="#" class="about-btn">About</a>
-        </article>
-        <article class="product">
-          <img src="img_goodnewseo/template.jpg" alt="Product 10">
-          <p>Lorem ipsum dolor sit amet.</p>
-          <a href="#" class="about-btn">About</a>
-        </article>
-        <article class="product">
-            <img src="img_goodnewseo/template.jpg" alt="Product 10">
-            <p>Lorem ipsum dolor sit amet.</p>
-            <a href="#" class="about-btn">About</a>
-          </article>
-          <article class="product">
-            <img src="img_goodnewseo/template.jpg" alt="Product 10">
-            <p>Lorem ipsum dolor sit amet.</p>
-            <a href="#" class="about-btn">About</a>
-          </article>
-          <article class="product">
-            <img src="img_goodnewseo/template.jpg" alt="Product 10">
-            <p>Lorem ipsum dolor sit amet.</p>
-            <a href="#" class="about-btn">About</a>
-          </article>
+      <% }) %>
+        
+        
       </section>
     
 </body>

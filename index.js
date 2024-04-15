@@ -4,7 +4,7 @@ if (process.env.NODE_ENV !== 'production') {
 
 const express = require("express"); //
 const dotenv = require("dotenv");//
-
+var multer = require('multer');
 
 const mongoose = require('mongoose');//
 // const path = require("path");
@@ -12,7 +12,8 @@ const morgan = require('morgan');
 const collection_dataqueue = require("./models/data_queue");
 const collection_userdata = require("./models/data_user");
 const collection_user_login_tracking = require("./models/data_login_tracking");
-
+const collection_file_upload = require("./models/file_upload_home_carousel");
+const collection_file_upload_gallery = require("./models/file_upload_gallery");
 const bcrypt = require('bcrypt');
 const flash = require('express-flash');
 const session = require('express-session');
@@ -46,10 +47,12 @@ const passport = require('passport');
 
 const initializepassport = require('./passport_config');
 const router = require('./routes/data_router');
+const file_upload_gallery = require('./models/file_upload_gallery');
 
 initializepassport(passport, email => users.find(user => user.email === email), id => users.find(user => user.id === id));
 app.use(passport.initialize());
 app.use(passport.session());
+
 
 
 var users = []
@@ -98,19 +101,19 @@ app.post("/login", async function (req, res) {
             const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
             if (!isPasswordMatch) {
                 // res.send("wrong Password");
-                return res.status(401).render("login_willy",{ messages: "password wrong" });
+                return res.status(401).render("login_willy", { messages: "password wrong" });
             }
             else {
-                collection_user_login_tracking.create({email: req.body.email, date: Date.now()});
+                collection_user_login_tracking.create({ email: req.body.email, date: Date.now() });
                 res.redirect("/index");
             }
         }
         else if (req.body.email == "") {
-            return res.status(401).render("login_willy",{ messages: "email section is empty" });
+            return res.status(401).render("login_willy", { messages: "email section is empty" });
         }
         else {
-            return res.status(401).render("login_willy",{ messages: "email not found" });
-            
+            return res.status(401).render("login_willy", { messages: "email not found" });
+
         }
     } catch (error) {
         res.status(400).json({ error });
@@ -147,7 +150,9 @@ app.get('/admin', async (req, res) => {
         const data_req = await collection_dataqueue.find();
         const data_user_req = await collection_userdata.find();
         const data_user_login_req = await collection_user_login_tracking.find();
-        res.render("admin.ejs", { title: "Admin", data_queue: data_req, data_user: data_user_req , data_user_login: data_user_login_req});
+        const data_file_upload_req = await collection_file_upload.find();
+        const data_file_upload_gallery_req = await collection_file_upload_gallery.find();
+        res.render("admin.ejs", { title: "Admin", data_file_upload_gallery: data_file_upload_gallery_req,data_queue: data_req, data_user: data_user_req, data_user_login: data_user_login_req, data_file_upload: data_file_upload_req });
     } catch (err) {
         console.error("Error fetching data:", err);
     }
@@ -163,7 +168,6 @@ app.get('/delete_queue/:id', async (req, res) => {
 })
 
 app.post('/update_queue/:id', async (req, res) => {
-    //gagal
     try {
         const { id } = req.params;
         await collection_dataqueue.findByIdAndUpdate({ _id: id }, {
@@ -179,13 +183,81 @@ app.post('/update_queue/:id', async (req, res) => {
     }
 })
 
+const storage = multer.diskStorage({
+    destination: './public/uploads_home_carousel', 
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const storage_gallery = multer.diskStorage({
+    destination: './public/uploads_gallery', 
+    filename: function (req, file, cb) {
+        cb(null, file.originalname);
+    }
+});
+
+const upload = multer({ storage: storage });
+
+app.post('/home_carousel_img', upload.single('home_carousel_img'), async function (req, res) {
+    var data = req.file
+    try {
+        await collection_file_upload.create({
+            //perlu karena expressjs baca file dari public, beda dgn penyimpanan file perlu tulis public/
+            //di html gk bisa kebaca kalau ada /public
+            img_path: data.path.slice(6),
+            field: data.fieldname
+        });
+        console.log(req.file);
+        res.redirect("/admin");
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+})
+const upload_gallery = multer({ storage: storage_gallery });
+app.post('/gallery_img', upload_gallery.single('gallery_img'), async function (req, res) {
+    var data = req.file
+    try {
+        await collection_file_upload_gallery.create({
+            img_path: data.path.slice(6),
+            field: data.fieldname,
+            description: req.body.description,
+        });
+        console.log(req.file);
+        res.redirect("/admin");
+    } catch (error) {
+        res.status(400).json({ message: error.message });
+    }
+})
+
+
+app.get('/delete_home_carousel_img/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await collection_file_upload.deleteOne({ _id: id });
+        res.redirect("/admin");
+    } catch (error) {
+        console.error('Error deleting data:', error);
+    }
+})
+
+app.get('/delete_gallery_img/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        await collection_file_upload_gallery.deleteOne({ _id: id });
+        res.redirect("/admin");
+    } catch (error) {
+        console.error('Error deleting data:', error);
+    }
+})
 
 //callback url
 
 app.get("/", async (req, res) => {
     try {
         const data_req = await collection_dataqueue.find();
-        res.render("index.ejs", { title: "Admin", data_queue: data_req });
+        const data_file_upload_req = await collection_file_upload.find();
+        res.render("index.ejs", { title: "Admin", data_queue: data_req, data_file_upload: data_file_upload_req });
     } catch (err) {
         console.error("Error fetching data:", err);
         // Handle errors appropriately (e.g., render an error page)
@@ -195,23 +267,25 @@ app.get("/", async (req, res) => {
 app.get("/index", async (req, res) => {
     try {
         const data_req = await collection_dataqueue.find();
-        res.render("index.ejs", { title: "Admin", data_queue: data_req });
+        const data_file_upload_req = await collection_file_upload.find();
+        res.render("index.ejs", { title: "Admin", data_queue: data_req, data_file_upload: data_file_upload_req });
     } catch (err) {
         console.error("Error fetching data:", err);
         // Handle errors appropriately (e.g., render an error page)
     }
 });
 
-app.get("/gallery", (req, res) => {
-    res.render("gallery.ejs");
+app.get("/gallery", async (req, res) => {
+    const data_gallery_req = await collection_file_upload_gallery.find();
+    res.render("gallery.ejs",{ data_gallery : data_gallery_req});
 });
 
 app.get("/register", (req, res) => {
-    res.render("register.ejs");
+    res.render("register.ejs", );
 });
 
 app.get("/login", checkNotAuthenticated, (req, res) => {
-    res.render("login_willy.ejs",{ messages: "" });
+    res.render("login_willy.ejs", { messages: "" });
 })
 
 
