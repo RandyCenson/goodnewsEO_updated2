@@ -87,7 +87,7 @@
                 <button type="submit">upload</button>
             </form>
             <form action="/gallery_img" method="post" enctype="multipart/form-data">
-                home carousel slide img:
+                gallery page img:
                 path: <input type="file" name="gallery_img" />
                 Description: <input type="text" name="description" />
                 <button type="submit">upload</button>
@@ -100,7 +100,7 @@
                         <th>field</th>
                         <th>path</th>
                         <th>action</th>
-                        <th>Description</th>
+                        <!-- <th>Description</th> -->
                     </tr>
                     <% data_file_upload.forEach((data, index)=> { %>
                         <tr>
@@ -126,7 +126,8 @@
                                     <%= data.img_path %>
                                 </td>
                                 <td>
-                                    <%= data.description %>
+                                    <!-- data.description -->
+                                    
                                 </td>
                                 <form action="/delete_gallery_img/<%= data._id %>" method="delete">
                                     <td>

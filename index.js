@@ -7,7 +7,7 @@ const dotenv = require("dotenv");//
 var multer = require('multer');
 
 const mongoose = require('mongoose');//
-// const path = require("path");
+
 const morgan = require('morgan');
 const collection_dataqueue = require("./models/data_queue");
 const collection_userdata = require("./models/data_user");
@@ -15,8 +15,7 @@ const collection_user_login_tracking = require("./models/data_login_tracking");
 const collection_file_upload = require("./models/file_upload_home_carousel");
 const collection_file_upload_gallery = require("./models/file_upload_gallery");
 const bcrypt = require('bcrypt');
-const flash = require('express-flash');
-const session = require('express-session');
+
 const app = express(); //
 
 dotenv.config();//
@@ -28,12 +27,7 @@ mongoose.connect(process.env.MONGO_URL).then(
 );//14
 
 
-app.use(session({
-    secret: process.env.SESSION_SECRET,
-    resave: false,
-    saveUninitialized: false
-}))
-app.use(flash());
+
 app.use(morgan('start'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -43,32 +37,7 @@ app.set("view engine", "ejs");
 app.use(express.static("public"));
 app.use(express.json());
 app.use("/api/data", require("./routes/data_router"));
-const passport = require('passport');
 
-const initializepassport = require('./passport_config');
-const router = require('./routes/data_router');
-const file_upload_gallery = require('./models/file_upload_gallery');
-
-initializepassport(passport, email => users.find(user => user.email === email), id => users.find(user => user.id === id));
-app.use(passport.initialize());
-app.use(passport.session());
-
-
-
-var users = []
-//cek sudah login atau belum
-function checkAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return next();
-    }
-    res.redirect("/login");
-}
-function checkNotAuthenticated(req, res, next) {
-    if (req.isAuthenticated()) {
-        return res.redirect("/index");
-    }
-    next();
-}
 
 //register
 app.post('/register', async (req, res) => {
@@ -145,18 +114,7 @@ app.post("/add_queue", async (req, res) => {
     res.redirect("/admin");
 })
 
-app.get('/admin', async (req, res) => {
-    try {
-        const data_req = await collection_dataqueue.find();
-        const data_user_req = await collection_userdata.find();
-        const data_user_login_req = await collection_user_login_tracking.find();
-        const data_file_upload_req = await collection_file_upload.find();
-        const data_file_upload_gallery_req = await collection_file_upload_gallery.find();
-        res.render("admin.ejs", { title: "Admin", data_file_upload_gallery: data_file_upload_gallery_req,data_queue: data_req, data_user: data_user_req, data_user_login: data_user_login_req, data_file_upload: data_file_upload_req });
-    } catch (err) {
-        console.error("Error fetching data:", err);
-    }
-});
+
 app.get('/delete_queue/:id', async (req, res) => {
     try {
         const { id } = req.params;
@@ -284,10 +242,21 @@ app.get("/register", (req, res) => {
     res.render("register.ejs", );
 });
 
-app.get("/login", checkNotAuthenticated, (req, res) => {
+app.get("/login", (req, res) => {
     res.render("login_willy.ejs", { messages: "" });
 })
-
+app.get('/admin', async (req, res) => {
+    try {
+        const data_req = await collection_dataqueue.find();
+        const data_user_req = await collection_userdata.find();
+        const data_user_login_req = await collection_user_login_tracking.find();
+        const data_file_upload_req = await collection_file_upload.find();
+        const data_file_upload_gallery_req = await collection_file_upload_gallery.find();
+        res.render("admin.ejs", { title: "Admin", data_file_upload_gallery: data_file_upload_gallery_req,data_queue: data_req, data_user: data_user_req, data_user_login: data_user_login_req, data_file_upload: data_file_upload_req });
+    } catch (err) {
+        console.error("Error fetching data:", err);
+    }
+});
 
 app.listen(port, () => {
     console.log(`Server listening on porty ${port}`);
