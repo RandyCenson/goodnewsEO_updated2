@@ -5,7 +5,7 @@ if (process.env.NODE_ENV !== 'production') {
 const express = require("express"); //
 const dotenv = require("dotenv");//
 var multer = require('multer');
-
+var jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');//
 
 const morgan = require('morgan');
@@ -14,6 +14,7 @@ const collection_userdata = require("./models/data_user");
 const collection_user_login_tracking = require("./models/data_login_tracking");
 const collection_file_upload = require("./models/file_upload_home_carousel");
 const collection_file_upload_gallery = require("./models/file_upload_gallery");
+const secret = 'mysecretkey';
 const bcrypt = require('bcrypt');
 
 const app = express(); //
@@ -46,7 +47,7 @@ app.post('/register', async (req, res) => {
 
         let datausers = {
             id: Date.now().toString(),
-            username: req.body.name,
+            username: req.body.username,
             email: req.body.email,
             password: hashedPassword
         };
@@ -60,36 +61,65 @@ app.post('/register', async (req, res) => {
 });
 
 
+
 //post login
 app.post("/login", async function (req, res) {
     try {
-        // check if the user exists
-        const user = await collection_userdata.findOne({ email: req.body.email });
-        if (user) {
-            //check if password matches
-            const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
-            if (!isPasswordMatch) {
-                // res.send("wrong Password");
-                return res.status(401).render("login_willy", { messages: "password wrong" });
+        const username = req.body.username;
+        const password = req.body.password;
+        if (username === 'admin' && password === 'admin') {
+            const token = jwt.sign({ username }, secret, { expiresIn: '10s' });
+            console.log("token admin created ");
+            res.redirect("/admin");
+        }
+
+        else if (username != "admin") {
+            const user = await collection_userdata.findOne({ username: req.body.username });
+
+            if (user) {
+                //check if password matches
+                const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
+                if (!isPasswordMatch) {
+                    // res.send("wrong Password");
+                    return res.status(401).render("login_willy", { messages: "password wrong" });
+                }
+                else {
+                    collection_user_login_tracking.create({ username: username, date: Date.now() });
+                    // const token = jwt.sign({ username }, secret, { expiresIn: '1h' });
+                    // console.log("token user: ", token);
+                    res.redirect("/index");
+                }
+            }
+            else if (req.body.username === "") {
+                return res.status(401).render("login_willy", { messages: "username section is empty" });
             }
             else {
-                collection_user_login_tracking.create({ email: req.body.email, date: Date.now() });
-                res.redirect("/index");
+                return res.status(401).render("login_willy", { messages: username + " user not found" });
+
             }
         }
-        else if (req.body.email == "") {
-            return res.status(401).render("login_willy", { messages: "email section is empty" });
-        }
         else {
-            return res.status(401).render("login_willy", { messages: "email not found" });
-
+            res.status(401).json({ error: 'non-admin user' });
         }
+
     } catch (error) {
-        res.status(400).json({ error });
+        // res.status(400).json({ error: error.message });
+        return res.status(401).render("login_willy", { messages: error.message });
     }
 });
+//verify token fuction
+function verifyToken(req,res,next,token) {
+    try {
+        const decoded = jwt.verify(token, secret);
+        console.log("ok decoded", decoded);
+        next();
+    } catch (error) {
+        console.log("error", decoded);
+        res.sendStatus(401);
+    }
+}
 
-//post logout
+//post logout belum lengkap
 app.post('/logout', (req, res, next) => {
     req.logOut(
         (err) => {
@@ -142,14 +172,14 @@ app.post('/update_queue/:id', async (req, res) => {
 })
 
 const storage = multer.diskStorage({
-    destination: './public/uploads_home_carousel', 
+    destination: './public/uploads_home_carousel',
     filename: function (req, file, cb) {
         cb(null, file.originalname);
     }
 });
 
 const storage_gallery = multer.diskStorage({
-    destination: './public/uploads_gallery', 
+    destination: './public/uploads_gallery',
     filename: function (req, file, cb) {
         cb(null, file.originalname);
     }
@@ -235,24 +265,24 @@ app.get("/index", async (req, res) => {
 
 app.get("/gallery", async (req, res) => {
     const data_gallery_req = await collection_file_upload_gallery.find();
-    res.render("gallery.ejs",{ data_gallery : data_gallery_req});
+    res.render("gallery.ejs", { data_gallery: data_gallery_req });
 });
 
 app.get("/register", (req, res) => {
-    res.render("register.ejs", );
+    res.render("register.ejs",);
 });
 
 app.get("/login", (req, res) => {
     res.render("login_willy.ejs", { messages: "" });
 })
-app.get('/admin', async (req, res) => {
+app.get('/admin', verifyToken, async (req, res) => {
     try {
         const data_req = await collection_dataqueue.find();
         const data_user_req = await collection_userdata.find();
         const data_user_login_req = await collection_user_login_tracking.find();
         const data_file_upload_req = await collection_file_upload.find();
         const data_file_upload_gallery_req = await collection_file_upload_gallery.find();
-        res.render("admin.ejs", { title: "Admin", data_file_upload_gallery: data_file_upload_gallery_req,data_queue: data_req, data_user: data_user_req, data_user_login: data_user_login_req, data_file_upload: data_file_upload_req });
+        res.render("admin.ejs", { title: "Admin", data_file_upload_gallery: data_file_upload_gallery_req, data_queue: data_req, data_user: data_user_req, data_user_login: data_user_login_req, data_file_upload: data_file_upload_req });
     } catch (err) {
         console.error("Error fetching data:", err);
     }

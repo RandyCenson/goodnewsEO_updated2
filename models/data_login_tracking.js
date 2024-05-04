@@ -1,14 +1,13 @@
 const { Schema, model } = require('mongoose');
 
 const user_data_schema = new Schema({
-    // nomor:{
-    //     type: Number,
-    //     required: true
-    // }, //otomatis kan saja di looping html
-
     email: {
         type:String,
-        required: true,
+        // required: true,
+    },
+    username:{
+        type: String,
+        required: true
     },
 
     date: {
