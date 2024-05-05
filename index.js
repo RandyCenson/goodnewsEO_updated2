@@ -62,7 +62,7 @@ app.post('/register', async (req, res) => {
 });
 
 
-
+var currUserName;
 //post login
 app.post("/login", async function (req, res) {
     try {
@@ -70,8 +70,8 @@ app.post("/login", async function (req, res) {
         const password = req.body.password;
         if (username === 'admin' && password === 'admin') {
             const token = jwt.sign({ username }, secret, { expiresIn: '30s' });
-            console.log("token admin created ");
             res.cookie('token', token, { httpOnly: true });
+            console.log("token admin created ");
             res.redirect("/admin");
         }
 
@@ -83,8 +83,9 @@ app.post("/login", async function (req, res) {
                 if (!isPasswordMatch) {
                     return res.status(401).render("login_willy", { messages: "password wrong" });
                 }
-                else {                   
+                else {
                     collection_user_login_tracking.create({ username: username, date: Date.now() });
+                    currUserName = username;
                     res.redirect("/index");
                 }
             }
@@ -100,7 +101,7 @@ app.post("/login", async function (req, res) {
             res.status(401).json({ error: 'non-admin user' });
         }
 
-    } 
+    }
     catch (error) {
         return res.status(401).render("login_willy", { messages: error.message });
     }
@@ -108,26 +109,22 @@ app.post("/login", async function (req, res) {
 //verify token fuction
 function verifyTokenAdmin(req, res, next) {
     const token = req.cookies.token;
-    try{
+    try {
         const user = jwt.verify(token, secret);
         req.user = user;
         next();
+
+
     }
-    catch(err){
+    catch (err) {
         res.redirect("/login");
     }
 }
 
 //post logout belum lengkap
 app.post('/logout', (req, res, next) => {
-    req.logOut(
-        (err) => {
-            if (err) {
-                return next(err);
-            }
-            res.redirect('/login');
-        }
-    );
+    currUserName = '';
+    res.redirect('/index');
 
 })
 
@@ -244,7 +241,7 @@ app.get("/", async (req, res) => {
     try {
         const data_req = await collection_dataqueue.find();
         const data_file_upload_req = await collection_file_upload.find();
-        res.render("index.ejs", { title: "Admin", data_queue: data_req, data_file_upload: data_file_upload_req });
+        res.render("index.ejs", { title: "Admin", data_queue: data_req, data_file_upload: data_file_upload_req, currUserName: currUserName });
     } catch (err) {
         console.error("Error fetching data:", err);
         // Handle errors appropriately (e.g., render an error page)
@@ -255,7 +252,7 @@ app.get("/index", async (req, res) => {
     try {
         const data_req = await collection_dataqueue.find();
         const data_file_upload_req = await collection_file_upload.find();
-        res.render("index.ejs", { title: "Admin", data_queue: data_req, data_file_upload: data_file_upload_req });
+        res.render("index.ejs", { title: "Admin", data_queue: data_req, data_file_upload: data_file_upload_req, currUserName: currUserName });
     } catch (err) {
         console.error("Error fetching data:", err);
         // Handle errors appropriately (e.g., render an error page)
