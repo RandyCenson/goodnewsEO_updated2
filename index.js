@@ -8,7 +8,7 @@ var multer = require('multer');
 var jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');//
 const cookieParser = require('cookie-parser');
-
+const nodemailer = require('nodemailer');
 const morgan = require('morgan');
 const collection_dataqueue = require("./models/data_queue");
 const collection_userdata = require("./models/data_user");
@@ -233,6 +233,46 @@ app.get('/delete_gallery_img/:id', async (req, res) => {
     } catch (error) {
         console.error('Error deleting data:', error);
     }
+})
+//email req
+
+app.post("/sendEmail", async (req, res) => {
+    const output = `
+    <p>You have a new contact request</p>
+    <h3>Contact Details</h3>
+    <ul>
+    <li>Email: ${req.body.email}</li>
+    </ul>
+    <h3>about: </h3>
+    <p>${req.body.description}</p>
+    `;
+    const transporter = nodemailer.createTransport({
+        service: 'gmail',
+        auth: {
+            user: 'randy.535220175@stu.untar.ac.id',
+            pass: 'ufxqsbcwgqlrhhky'
+        },
+        port: 465, // or 587
+        secure: true, // true for 465, false for other ports
+        tls: {
+            rejectUnauthorized: false
+        }
+    });
+    let mailOptions = {
+        from: 'randy.535220175@stu.untar.ac.id',
+        to: 'randy.535220175@stu.untar.ac.id',
+        subject: 'GoodnewsEO - Contact Request',
+        text: 'hi there...',
+        html: output
+    }
+    transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+            return console.log(error);
+        }
+        console.log('Message sent: %s', info.messageId);
+        res.redirect("/index");
+    })
+
 })
 
 //callback url

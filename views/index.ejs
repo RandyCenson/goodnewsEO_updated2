@@ -26,11 +26,11 @@
                 <div class="carousel-inner">
                     <% data_file_upload.forEach((data,index)=> { %>
                         <% if (index==0) { %>
-                            <div class="carousel-item active" >
+                            <div class="carousel-item active">
                                 <img src="<%=data.img_path %>" class="d-block w-100" alt="<%=data.img_path %>">
                             </div>
                             <% } else {%>
-                                <div class="carousel-item" >
+                                <div class="carousel-item">
                                     <img src="<%=data.img_path %>" class="d-block w-100" alt="<%=data.img_path %>">
                                 </div>
                                 <% } %>
@@ -162,17 +162,19 @@
         <div class="space2"></div>
         <!-- form contact us -->
         <div class="contactus">
+            <form action="/sendEmail" method="post">
             <div class="mb-3">
-                <label for="exampleFormControlInput1" class="form-label">Email address</label>
-                <input type="email" class="form-control" id="exampleFormControlInput1" placeholder="name@example.com">
+                    <label for="exampleFormControlInput1" class="form-label">Email address</label>
+                    <input type="email" class="form-control" id="exampleFormControlInput1"
+                        placeholder="name@example.com" name="email">
             </div>
             <div class="mb-3">
                 <label for="exampleFormControlTextarea1" class="form-label">Description</label>
                 <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
-                    placeholder="Feel free to ask"></textarea>
+                    placeholder="Feel free to ask..." name="description"></textarea>
             </div>
-            <button type="button" class="btn btn-primary">Submit</button>
-
+            <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
         </div>
 
         <div class="space2"></div>
