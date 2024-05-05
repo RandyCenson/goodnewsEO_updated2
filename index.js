@@ -7,6 +7,7 @@ const dotenv = require("dotenv");//
 var multer = require('multer');
 var jwt = require('jsonwebtoken');
 const mongoose = require('mongoose');//
+const cookieParser = require('cookie-parser');
 
 const morgan = require('morgan');
 const collection_dataqueue = require("./models/data_queue");
@@ -32,7 +33,7 @@ mongoose.connect(process.env.MONGO_URL).then(
 app.use(morgan('start'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
-
+app.use(cookieParser());
 
 app.set("view engine", "ejs");
 app.use(express.static("public"));
@@ -68,25 +69,22 @@ app.post("/login", async function (req, res) {
         const username = req.body.username;
         const password = req.body.password;
         if (username === 'admin' && password === 'admin') {
-            const token = jwt.sign({ username }, secret, { expiresIn: '10s' });
+            const token = jwt.sign({ username }, secret, { expiresIn: '30s' });
             console.log("token admin created ");
+            res.cookie('token', token, { httpOnly: true });
             res.redirect("/admin");
         }
 
-        else if (username != "admin") {
+        else if (username !== "admin") {
             const user = await collection_userdata.findOne({ username: req.body.username });
-
             if (user) {
                 //check if password matches
                 const isPasswordMatch = await bcrypt.compare(req.body.password, user.password);
                 if (!isPasswordMatch) {
-                    // res.send("wrong Password");
                     return res.status(401).render("login_willy", { messages: "password wrong" });
                 }
-                else {
+                else {                   
                     collection_user_login_tracking.create({ username: username, date: Date.now() });
-                    // const token = jwt.sign({ username }, secret, { expiresIn: '1h' });
-                    // console.log("token user: ", token);
                     res.redirect("/index");
                 }
             }
@@ -102,20 +100,21 @@ app.post("/login", async function (req, res) {
             res.status(401).json({ error: 'non-admin user' });
         }
 
-    } catch (error) {
-        // res.status(400).json({ error: error.message });
+    } 
+    catch (error) {
         return res.status(401).render("login_willy", { messages: error.message });
     }
 });
 //verify token fuction
-function verifyToken(req,res,next,token) {
-    try {
-        const decoded = jwt.verify(token, secret);
-        console.log("ok decoded", decoded);
+function verifyTokenAdmin(req, res, next) {
+    const token = req.cookies.token;
+    try{
+        const user = jwt.verify(token, secret);
+        req.user = user;
         next();
-    } catch (error) {
-        console.log("error", decoded);
-        res.sendStatus(401);
+    }
+    catch(err){
+        res.redirect("/login");
     }
 }
 
@@ -275,7 +274,7 @@ app.get("/register", (req, res) => {
 app.get("/login", (req, res) => {
     res.render("login_willy.ejs", { messages: "" });
 })
-app.get('/admin', verifyToken, async (req, res) => {
+app.get('/admin', verifyTokenAdmin, async (req, res) => {
     try {
         const data_req = await collection_dataqueue.find();
         const data_user_req = await collection_userdata.find();
