@@ -97,6 +97,9 @@ app.post("/login", async function (req, res) {
 
             }
         }
+        else if (req.body.username === "") {
+            return res.status(401).render("login_willy", { messages: "username section is empty" });
+        }
         else {
             res.status(401).json({ error: 'non-admin user' });
         }

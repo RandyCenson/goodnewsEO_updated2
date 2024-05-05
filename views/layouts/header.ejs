@@ -1,8 +1,9 @@
 <header>
-    <% if (currUserName!=='') { %>
-    <h1 class="nav-title">GoodnewsEO <br> <span style="font-size: 0.6em; font-style: italic;">Welcome <%= currUserName %></span></h1>
+    <% if (currUserName==='') { %>
+        <h1 class="nav-title">GoodnewsEO </h1>
+    
     <% } else { %>
-    <h1 class="nav-title">GoodnewsEO </h1>
+    <h1 class="nav-title">GoodnewsEO <br> <span style="font-size: 0.6em; font-style: italic;">Welcome <%= currUserName %></span></h1>
     <% } %>
     
     <nav class="nav-bar">
@@ -24,6 +25,7 @@
                  <form action="/logout" method="post">
                     <% if (currUserName!=='') { %>
                     <li><button type="submit">logout</button></li> 
+                    
                     <% } %>
                  </form>
                  
